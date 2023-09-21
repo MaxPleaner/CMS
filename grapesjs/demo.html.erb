@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
-    <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.21.6">
-    <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
-    <link rel="stylesheet" href="stylesheets/tooltip.css">
-    <link rel="stylesheet" href="stylesheets/demos.css?v3">
+    <link rel="stylesheet" href="/stylesheets/toastr.min.css">
+    <link rel="stylesheet" href="/stylesheets/grapes.min.css?v0.21.6">
+    <link rel="stylesheet" href="/stylesheets/grapesjs-preset-webpage.min.css">
+    <link rel="stylesheet" href="/stylesheets/tooltip.css">
+    <link rel="stylesheet" href="/stylesheets/demos.css?v3">
     <link href="https://unpkg.com/grapick/dist/grapick.min.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="js/toastr.min.js"></script>
-    <script src="js/grapes.min.js?v0.21.6"></script>
+    <script src="/js/toastr.min.js"></script>
+    <script src="/js/grapes.min.js?v0.21.6"></script>
     <script src="https://unpkg.com/grapesjs-preset-webpage@1.0.2"></script>
     <script src="https://unpkg.com/grapesjs-blocks-basic@1.0.1"></script>
     <script src="https://unpkg.com/grapesjs-plugin-forms@2.0.5"></script>
@@ -112,14 +112,14 @@
   <body>
     <div style="display: none">
       <div class="gjs-logo-cont">
-        <a href="https://grapesjs.com"><img class="gjs-logo" src="img/grapesjs-logo-cl.png"></a>
+        <a href="https://grapesjs.com"><img class="gjs-logo" src="/img/grapesjs-logo-cl.png"></a>
         <div class="gjs-logo-version"></div>
       </div>
     </div>
     <div class="ad-cont">
       <!-- <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?zoneid=1673&serve=C6AILKT&placement=grapesjscom" id="_carbonads_js"></script> -->
       <div id="native-carbon"></div>
-      <script async type="text/javascript" src="./js/carbon-v2.js"></script>
+      <script async type="text/javascript" src="/js/carbon-v2.js"></script>
     </div>
 
     <div id="gjs" style="height:0px; overflow:hidden">
@@ -200,7 +200,7 @@
       <section class="am-sect">
         <div class="container-width">
           <div class="am-container">
-            <img class="img-phone" onmousedown="return false" src="./img/phone-app.png"/>
+            <img class="img-phone" onmousedown="return false" src="/img/phone-app.png"/>
             <div class="am-content">
               <div class="am-pre">ASSET MANAGER</div>
               <div class="am-title">Manage your images with Asset Manager</div>
@@ -261,7 +261,7 @@
           <div class="badges">
             <div class="badge">
               <div class="badge-header"></div>
-              <img class="badge-avatar" src="img/team1.jpg">
+              <img class="badge-avatar" src="/img/team1.jpg">
               <div class="badge-body">
                 <div class="badge-name">Adam Smith</div>
                 <div class="badge-role">CEO</div>
@@ -275,7 +275,7 @@
             </div>
             <div class="badge">
               <div class="badge-header"></div>
-              <img class="badge-avatar" src="img/team2.jpg">
+              <img class="badge-avatar" src="/img/team2.jpg">
               <div class="badge-body">
                 <div class="badge-name">John Black</div>
                 <div class="badge-role">Software Engineer</div>
@@ -289,7 +289,7 @@
             </div>
             <div class="badge">
               <div class="badge-header"></div>
-              <img class="badge-avatar" src="img/team3.jpg">
+              <img class="badge-avatar" src="/img/team3.jpg">
               <div class="badge-body">
                 <div class="badge-name">Jessica White</div>
                 <div class="badge-role">Web Designer</div>
@@ -1269,8 +1269,8 @@
           autoload: true,
           options: {
             remote: {
-              urlLoad: "http://localhost:4567/editor/load",
-              urlStore: "http://localhost:4567/editor/store",
+              urlLoad: "<%= "/sites/#{@site}/pages/#{@page}/editor/load" %>",
+              urlStore: "<%= "/sites/#{@site}/pages/#{@page}/editor/store" %>",
               // The `remote` storage uses the POST method when stores data but
               // the json-server API requires PATCH.
               // fetchOptions: opts => (opts.method === 'POST' ?  { method: 'PATCH' } : {}),

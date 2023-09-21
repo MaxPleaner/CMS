@@ -1,0 +1,9 @@
+h1 sites manager
+
+- if @sites.any?
+  ul
+    - @sites.each do |site|
+      li
+        a href="/sites/#{site}" = site
+- else
+  b No Sites Yet

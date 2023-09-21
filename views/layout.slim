@@ -1,0 +1,35 @@
+doctype html
+head
+  css:
+    body, html {
+      width: 100vw;
+      height: 100vh;
+    }
+    body {
+      background-color: black;
+      color: white;
+    }
+    #main {
+      margin: 10px;
+      width: 100vw;
+      height: 100vh;
+    }
+    a, a:visited {
+      color: lightgreen;
+    }
+    .flash {
+      display: inline-block;
+      border: 1px solid white;
+      padding: 2px;
+      font-size: 2em;
+      color: lightred;
+    }
+html
+  head
+    title Dissonant CMS
+  body
+    #main
+      - if flash[:message]
+        pre.flash = flash[:message]
+        br
+      == yield

@@ -1,0 +1,27 @@
+a href="/" Back to sites manager
+br
+
+h1 = @site
+
+form action="/sites/#{@site}/pages" method="POST"
+  input type="text" name="page" placeholder="name"
+  input type="submit" value="Add Page"
+
+br
+
+- if @pages.any?
+  ul
+    - @pages.each do |page|
+      li
+        a href="/sites/#{@site}/pages/#{page}/editor" = page
+        form onclick="return clicked('are you sure');" style="display: inline; margin-left: 15px" action="/sites/#{@site}/pages/#{page}/delete" method="POST"
+          input type="submit" value="DELETE"
+- else
+  b No pages yet
+
+javascript:
+
+  function clicked(prompt) {
+      return confirm(prompt);
+  }
+
