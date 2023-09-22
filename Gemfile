@@ -7,3 +7,4 @@ gem 'sinatra-contrib'
 gem "sinatra-flash"
 gem 'nokogiri'
 gem "rack"
+gem "thin"
