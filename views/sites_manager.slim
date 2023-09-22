@@ -15,7 +15,7 @@ br
         action="/#{site}"
         method="GET"
       }
-        input type="submit" value="View Live" disabled=('disabled' unless has_index_page?(site))
+        input type="submit" value="View Live" disabled=('disabled' unless has_index_page?(site) && published?(site, "index") && activated?(site, "index"))
 
       form{
         style="display: inline; margin-left: 15px"
