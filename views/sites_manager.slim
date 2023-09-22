@@ -4,10 +4,48 @@ form action="/sites" method="POST"
   input type="submit" value="Create Site"
   input type="text" name="site" placeholder="name"
 
+br
 - if @sites.any?
-  ul
-    - @sites.each do |site|
-      li style="margin-bottom: 10px"
-        a href="/sites/#{site}" = site
+  - @sites.each do |site|
+    div style="margin-bottom: 10px; outline: 1px solid white; display: inline-block; padding: 5px"
+      b style="min-width: 150px; display: inline-block" = site
+
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/#{site}"
+        method="GET"
+      }
+        input type="submit" value="view"
+
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/sites/#{site}"
+        method="GET"
+      }
+        input type="submit" value="edit"
+
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/sites/#{site}/clone"
+        method="POST"
+      }
+        input style="width: 70px" type="text" name="new_name" placeholder="new name"
+        input type="submit" value="clone"
+
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/sites/#{site}/delete"
+        method="POST"
+        onclick="return clicked('are you sure');"
+      }
+        input type="submit" value="delete"
+
+    br
 - else
   b No Sites Yet
+
+javascript:
+
+  function clicked(prompt) {
+      return confirm(prompt);
+  }

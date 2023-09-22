@@ -16,6 +16,7 @@ SITES_DIR = "./sites"
 get '/sites/:site/pages/:page/editor' do
   @site = alphanumeric(params[:site])
   @page = alphanumeric(params[:page])
+  @published = published?(@site, @page)
 
   erb File.read(File.join(settings.public_folder, "demo.html.erb"))
 end
@@ -25,6 +26,7 @@ end
 # ---------------------------------------------
 
 post '/sites/:site/pages/:page/editor/store' do
+
   @site = alphanumeric(params[:site])
   @page = alphanumeric(params[:page])
   site_path = File.join(SITES_DIR, @site)
@@ -55,6 +57,7 @@ end
 # ---------------------------------------------
 # Load editor data for a page
 # ---------------------------------------------
+
 get '/sites/:site/pages/:page/editor/load' do
   @site = alphanumeric(params[:site])
   @page = alphanumeric(params[:page])
@@ -70,12 +73,60 @@ get '/sites/:site/pages/:page/editor/load' do
 end
 
 # ---------------------------------------------
+# Publish a page
+# ---------------------------------------------
+
+get '/sites/:site/page/:page/publish' do
+  # TODO
+end
+
+# ---------------------------------------------
+# Unpublish a page
+# ---------------------------------------------
+
+get '/sites/:site/page/:page/unpublish' do
+  # TODO
+end
+
+# ---------------------------------------------
+# Revert changes since last publish
+# ---------------------------------------------
+
+get '/sites/:site/page/:page/revert' do
+  # TODO
+end
+
+# ---------------------------------------------
 # Get sites list
 # ---------------------------------------------
 
 get '/' do
   @sites = subfolders(SITES_DIR) || []
   slim :sites_manager
+end
+
+# ---------------------------------------------
+# Clone site
+# ---------------------------------------------
+
+get '/sites/:site/clone' do
+  # TODO
+end
+
+# ---------------------------------------------
+# Clone page
+# ---------------------------------------------
+
+get '/sites/:site/pages/#{page}/clone' do
+  # TODO
+end
+
+# ---------------------------------------------
+# Delete site
+# ---------------------------------------------
+
+get '/sites/:site/delete' do
+  # TODO
 end
 
 # ---------------------------------------------
@@ -88,6 +139,7 @@ get "/sites/:site" do
   return 404 if same_path?(site_path, SITES_DIR)
 
   @pages = subfolders(site_path) || []
+
   slim :pages_manager
 end
 
@@ -125,7 +177,7 @@ post "/sites/:site/pages" do
   return 404 if same_path?(pages_path, site_path)
 
   if File.exists?(pages_path)
-    flash[:message] = "Page already exists"
+    flash[:message] = "Page name is already taken"
     redirect "/sites/#{@site}"
   end
 
@@ -205,6 +257,12 @@ end
 # -------------------------------------------------
 # Helper methods
 # -------------------------------------------------
+
+helpers do
+  def published?(site, page)
+    # TODO
+  end
+end
 
 def same_path?(a, b)
   File.expand_path(a) == File.expand_path(b)

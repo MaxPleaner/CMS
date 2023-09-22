@@ -123,6 +123,34 @@
         href="<%= "/#{@site}/#{@page}" %>"
         target="_blank"
       >View live</a>
+
+      <% if @published %>
+        <form
+          action="<%= "/sites/#{@site}/page/#{@page}/unpublish" %>"
+          method="POST"
+          style="padding: 5px; display: inline-block; outline: 1px solid black"
+        >
+          <input type="submit" value="Unpublish">
+        </form>
+      <% else %>
+        <form
+          action="<%= "/sites/#{@site}/page/#{@page}/publish" %>"
+          method="POST"
+          style="padding: 5px; display: inline-block; outline: 1px solid black"
+        >
+          <input type="submit" value="Publish">
+        </form>
+      <% end %>
+
+        <form
+          action="<%= "/sites/#{@site}/page/#{@page}/revert" %>"
+          method="POST"
+          style="padding: 5px; display: inline-block; outline: 1px solid black"
+        >
+          <input type="submit" value="Revert Unpublished Changes">
+        </form>
+
+
     </div>
     <!-------------------------------------------------->
 

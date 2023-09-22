@@ -3,8 +3,6 @@ br
 
 h1 = @site
 
-h2 Pages
-
 form action="/sites/#{@site}/pages" method="POST"
   input type="submit" value="Add Page"
   input type="text" name="page" placeholder="name"
@@ -12,52 +10,76 @@ form action="/sites/#{@site}/pages" method="POST"
 br
 
 - if @pages.any?
-  ul
-    - @pages.each do |page|
-      li style="margin-bottom: 20px"
-        b = page
+  - @pages.each do |page|
+    div style="margin-bottom: 10px; outline: 1px solid white; display: inline-block; padding: 5px"
+      b = page
 
+      - if published?(@site, page)
         form{
           style="display: inline; margin-left: 15px"
           action="/#{@site}/#{page}"
           method="GET"
         }
-          input type="submit" value="VIEW"
+          input type="submit" value="View"
+      - else
+        spans style="margin-left: 10px" = "(unpublished)"
 
-        form{
-          style="display: inline; margin-left: 15px"
-          action="/sites/#{@site}/pages/#{page}/editor"
-          method="GET"
-        }
-          input type="submit" value="EDIT"
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/sites/#{@site}/pages/#{page}/editor"
+        method="GET"
+      }
+        input type="submit" value="Edit"
 
-        form{
-          onclick="return clicked('are you sure');"
-          style="display: inline; margin-left: 15px"
-          action="/sites/#{@site}/pages/#{page}/delete"
-          method="POST"
-        }
-          input type="submit" value="DELETE"
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/sites/#{@site}/pages/#{page}/clone"
+        method="POST"
+      }
+        input style="width: 70px" type="text" name="new_name" placeholder="new name"
+        input type="submit" value="clone"
+
+      form{
+        onclick="return clicked('are you sure');"
+        style="display: inline; margin-left: 15px"
+        action="/sites/#{@site}/pages/#{page}/delete"
+        method="POST"
+      }
+        input type="submit" value="Delete"
+
+    br
 - else
   b No pages yet
   br
 
-h2 Instructions
-
 |
   <pre style="max-width: 500px; margin-right: 50px; white-space: pre-wrap; word-wrap: break-word; font-size: 1em; outline: 1px solid white; padding: 10px; display: inline-block">
 
+  ===============
+  INSTRUCTIONS
+  ===============
+
   INDEX PAGE
 
-  If you create a page named "index" it will be the root page, e.g. if your site is named "banana-depot" it will be available at "sites.dissonant.info/banana-depot
+    If you create a page named "index" it will be the root page, e.g. if your site is named "banana-depot" it will be available at "sites.dissonant.info/banana-depot. If you don't create an "index" page, then visiting this url will raise a "not found" error.
 
   CREATING A NEW PAGE
 
-  When creating a new page, you will need to open the editor and save at least once before the page will become available.
+    When creating a new page, you will need to open the editor and press "publish" before it will be live.
+
+  SAVING, PUBLISHING, REVERTING
+
+    "Saving" happens automatically whenever you make a change, but does not update the version which is visible to the public, which is the "Published" version. That version only gets updated when you press "Publish". If you want to completely undo all your changes which weren't already published, you can press "Revert".
 
   LINKS BETWEEN PAGES
 
-  When linking between pages, use href values relative to the root of your site. For example if your root page "sites.dissonant.info/banana-depot" links to a sub page "sites.dissonant.info/banana-depot/my-cool-subpage", you would use an href value of "my-cool-subpage" or "/my-cool-subpage". Similarly, if you wanted to put a link back to the root page from the subpage, you would just use "/"
+    When linking between pages, use href values relative to the root of your site. For example if your root page "sites.dissonant.info/banana-depot" links to a sub page "sites.dissonant.info/banana-depot/my-cool-subpage", you would use an href value of "my-cool-subpage" or "/my-cool-subpage". Similarly, if you wanted to put a link back to the root page from the subpage, you would just use "/"
+
+  LAYOUT
+
+    If there is a page named "layout" it will be used as a wrapper for all the other pages. For example if you want to make a navbar and footer that are the same on all pages, rather than duplicating all that content in each page, you could make a single "layout" for it.
+
+    The layout must contain a block with ID "layout-content" somewhere inside it, otherwise the other pages' content won't be shown! The contents of this block will be replaced with an iframe containing your page content. A basic 1 Column block would work well for this.
 
   </pre>
 
