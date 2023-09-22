@@ -6,3 +6,4 @@ gem "slim"
 gem 'sinatra-contrib'
 gem "sinatra-flash"
 gem 'nokogiri'
+gem "rack"

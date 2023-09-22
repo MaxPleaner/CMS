@@ -2,7 +2,7 @@ Grapes.JS is a super cool project, but it's really an editor library, not a full
 
 This project wraps it up in a CMS.
 
-More docs forthcoming.
+TODO: Update Readme
 
 A bit about architecture:
 

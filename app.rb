@@ -6,7 +6,6 @@ require 'sinatra/flash'
 require 'nokogiri'
 require 'base64'
 
-# TODO: Auth
 # TODO: Deploy
 
 enable :sessions
@@ -21,7 +20,9 @@ error = <<~TXT
   "name" and "password" are strings, and "sites" is an array containing site names they can access.
   The special site name "admin" will give the user access to all sites.
 TXT
+
 raise error unless File.exists?(USERS_FILE)
+
 USERS = JSON.parse(File.read(USERS_FILE)).map do |user|
   [user["name"], user]
 end.to_h

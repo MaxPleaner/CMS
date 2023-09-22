@@ -39,6 +39,7 @@ PLATFORMS
 DEPENDENCIES
   byebug
   nokogiri
+  rack
   sinatra
   sinatra-contrib
   sinatra-flash
