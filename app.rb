@@ -6,12 +6,25 @@ require 'sinatra/flash'
 require 'nokogiri'
 require 'base64'
 
-# TODO: auto recompile published pages on layout change
 # TODO: Auth
+# TODO: Deploy
 
 enable :sessions
 set :public_folder, File.dirname(__FILE__) + "/grapesjs"
 SITES_DIR = "./sites"
+FileUtils.mkdir(SITES_DIR) unless File.exists?(SITES_DIR)
+
+USERS_FILE = "./users.json"
+error = <<~TXT
+  ERROR: users.json doesn't exist.
+  It should be an array of dictionaries, each containing "name", "password", and "sites" key.
+  "name" and "password" are strings, and "sites" is an array containing site names they can access.
+  The special site name "admin" will give the user access to all sites.
+TXT
+raise error unless File.exists?(USERS_FILE)
+USERS = JSON.parse(File.read(USERS_FILE)).map do |user|
+  [user["name"], user]
+end.to_h
 
 # ---------------------------------------------
 # Open the editor for a page
@@ -21,8 +34,9 @@ SITES_DIR = "./sites"
 get '/sites/:site/pages/:page/editor' do
   @site = alphanumeric(params[:site])
   @page = alphanumeric(params[:page])
-  @activated = activated?(@site, @page)
+  return auth_failed! unless authorized_for_site?(@site)
 
+  @activated = activated?(@site, @page)
   erb File.read(File.join(settings.public_folder, "demo.html.erb"))
 end
 
@@ -32,6 +46,7 @@ end
 
 post '/sites/:site/pages/:page/editor/store' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   request_body = JSON.parse(request.body.read)
 
@@ -58,6 +73,7 @@ end
 
 get '/sites/:site/pages/:page/editor/load' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   storage_path = File.join(@page_path, "data-saved.json")
   send_file storage_path
@@ -69,6 +85,7 @@ end
 
 post '/sites/:site/page/:page/publish' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   storage_path = File.join(@page_path, "data-saved.json")
   html_path = File.join(@page_path, "index-saved.html")
@@ -86,6 +103,7 @@ end
 
 post '/sites/:site/page/:page/deactivate' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   FileUtils.touch(File.join(@page_path, "deactivated"))
 
@@ -98,6 +116,7 @@ end
 
 post '/sites/:site/page/:page/reactivate' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   file_path = File.join(@page_path, "deactivated")
   FileUtils.rm(file_path) if File.exists?(file_path)
@@ -111,6 +130,7 @@ end
 
 post '/sites/:site/page/:page/revert' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   storage_path = File.join(@page_path, "data.json")
   html_path = File.join(@page_path, "index.html")
@@ -137,6 +157,7 @@ end
 
 post '/sites/:site/clone' do
   return 404 unless load_site(params)
+  return auth_failed!(redirect_url: "/") unless authorized_for_site?("admin")
 
   new_site = alphanumeric(params[:new_name])
   new_path = File.join(SITES_DIR, new_site)
@@ -157,6 +178,7 @@ end
 
 post '/sites/:site/pages/:page/clone' do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   new_page = alphanumeric(params[:new_name])
   new_path = File.join(@site_path, new_page)
@@ -177,6 +199,7 @@ end
 
 post '/sites/:site/delete' do
   return 404 unless load_site(params)
+  return auth_failed!(redirect_url: "/") unless authorized_for_site?("admin")
 
   FileUtils.rm_rf(@site_path)
 
@@ -189,6 +212,7 @@ end
 
 get "/sites/:site" do
   return 404 unless load_site(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   @pages = subfolders(@site_path) || []
 
@@ -201,8 +225,10 @@ end
 
 post "/sites" do
   return 404 unless load_site(params)
-  if @site == "sites"
-    flash[:message] = "Can't create a site named 'sites'"
+  return auth_failed!(redirect_url: "/") unless authorized_for_site?("admin")
+
+  if @site == "sites" || @site == "admin"
+    flash[:message] = "Can't create a site named '#{@site}'"
     redirect "/"
   end
 
@@ -223,6 +249,8 @@ end
 
 post "/sites/:site/pages" do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
+
   if @page == "pages"
     flash[:message] = "Can't create a page named 'pages'"
     redirect "/sites/#{@site}"
@@ -244,6 +272,7 @@ end
 
 post "/sites/:site/pages/:page/delete" do
   return 404 unless load_site_and_page(params)
+  return auth_failed! unless authorized_for_site?(@site)
 
   unless File.exists?(@page_path)
     flash[:message] = "Page doesnt exist"
@@ -297,22 +326,47 @@ end
 helpers do
   def published?(site, page)
     site_path = File.join(SITES_DIR, site)
-    pages_path = File.join(site_path, page)
-    html_path = File.join(pages_path, "index.html")
+    page_path = File.join(site_path, page)
+    html_path = File.join(page_path, "index.html")
 
     File.exists?(html_path)
   end
 
   def activated?(site, page)
     site_path = File.join(SITES_DIR, site)
-    pages_path = File.join(site_path, page)
+    page_path = File.join(site_path, page)
 
-    !File.exists?(File.join(pages_path, "deactivated"))
+    !File.exists?(File.join(page_path, "deactivated"))
   end
 
   def has_index_page?(site)
     site_path = File.join(SITES_DIR, site)
     File.exists?(File.join(site_path, "index"))
+  end
+
+  def auth_failed!(redirect_url: nil)
+    headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+    # if redirect_url
+    #   flash[:message] = "You are not authorized to perform this action"
+    #   redirect(redirect_url)
+    # else
+      halt 401, "Not authorized\n"
+    # end
+  end
+
+  def authorized_for_site?(site)
+    auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    return false unless auth.provided? && auth.basic? && auth.credentials
+
+    user = USERS[auth.credentials[0]]
+    return false unless user
+    return false unless user["password"] == auth.credentials[1]
+
+    ([site, "admin"] & user["sites"]).any?
+  end
+
+  def admin?(request)
+    authorized_for_site?(request, "admin")
   end
 end
 
@@ -328,7 +382,7 @@ def load_site_and_page(params)
   return false unless load_site(params)
 
   @page = alphanumeric(params[:page])
-  return nil unless @page
+  return false unless @page
 
   @page_path = File.join(@site_path, @page)
   return false if same_path?(@page_path, @site_path)
@@ -405,7 +459,6 @@ def build_html(site, page, body, css)
   # (simply embedding the child css and body inline within the layout)
   # ------------------------------------------------------------
 
-  # We first need to parse the inner html of the child's body
   child_body_inner_html = Nokogiri.parse(body).at_css("body").inner_html
   child_html = <<~HTML
     <div style="width: 100%; height: 100%;" id="page-content">
@@ -417,5 +470,7 @@ def build_html(site, page, body, css)
   layout_wrapper.replace(child_html_tree)
   wrapper_tree.to_html
 end
+
+
 
 

@@ -15,14 +15,14 @@ br
         action="/#{site}"
         method="GET"
       }
-        input type="submit" value="view live" disabled=('disabled' unless has_index_page?(site))
+        input type="submit" value="View Live" disabled=('disabled' unless has_index_page?(site))
 
       form{
         style="display: inline; margin-left: 15px"
         action="/sites/#{site}"
         method="GET"
       }
-        input type="submit" value="edit pages"
+        input type="submit" value="Edit Pages"
 
       form{
         style="display: inline; margin-left: 15px"
@@ -30,7 +30,7 @@ br
         method="POST"
       }
         input style="width: 70px" type="text" name="new_name" placeholder="new name"
-        input type="submit" value="clone"
+        input type="submit" value="Clone"
 
       form{
         style="display: inline; margin-left: 15px"
@@ -38,7 +38,7 @@ br
         method="POST"
         onclick="return clicked('are you sure');"
       }
-        input type="submit" value="delete"
+        input type="submit" value="Delete"
 
     - unless has_index_page?(site)
       span style="margin-left: 10px" = "(no index page)"
