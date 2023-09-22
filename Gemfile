@@ -5,3 +5,4 @@ gem "sinatra"
 gem "slim"
 gem 'sinatra-contrib'
 gem "sinatra-flash"
+gem 'nokogiri'

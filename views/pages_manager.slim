@@ -12,20 +12,14 @@ br
 - if @pages.any?
   - @pages.each do |page|
     div style="margin-bottom: 10px; outline: 1px solid white; display: inline-block; padding: 5px"
-      b = page
+      b style="display: inline-block; min-width: 75px" = page
 
-      - if published?(@site, page)
-        - if activated?(@site, page)
-          form{
-            style="display: inline; margin-left: 15px"
-            action="/#{@site}/#{page}"
-            method="GET"
-          }
-            input type="submit" value="View"
-        - else
-          span style="margin-left: 10px" = "(deactivated)"
-      - else
-        span style="margin-left: 10px" = "(unpublished)"
+      form{
+        style="display: inline; margin-left: 15px"
+        action="/#{@site}/#{page}"
+        method="GET"
+      }
+        input type="submit" value="View" disabled=('disabled' unless published?(@site, page) && activated?(@site, page))
 
       form{
         style="display: inline; margin-left: 15px"
@@ -65,6 +59,11 @@ br
       }
         input type="submit" value="Delete"
 
+    - if !published?(@site, page)
+      span style="margin-left: 10px" = "(unpublished)"
+    - elsif !activated?(@site, page)
+      span style="margin-left: 10px" = "(deactivated)"
+
     br
 - else
   b No pages yet
@@ -97,7 +96,9 @@ br
 
     If there is a page named "layout" it will be used as a wrapper for all the other pages. For example if you want to make a navbar and footer that are the same on all pages, rather than duplicating all that content in each page, you could make a single "layout" for it.
 
-    The layout must contain a block with ID "layout-content" somewhere inside it, otherwise the other pages' content won't be shown! The contents of this block will be replaced with an iframe containing your page content. A basic 1 Column block would work well for this.
+    The layout must contain a block with ID "layout-content" somewhere inside it, otherwise the other pages' content won't be shown! This block will be removed and replaced with your page content.
+
+    Note: Publishing a layout-file will automatically re-compile all published pages within the site in order to apply those changes.
 
   </pre>
 
