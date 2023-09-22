@@ -113,42 +113,42 @@
 
     <!-- NOTE: This is added by Dissonant CMS ---------->
     <div style="padding: 5px" id="inserted-nav">
-      <a
-        style="display: inline-block; outline: 1px solid black; padding: 5px"
-        href="<%= "/sites/#{@site}" %>"
-      >Back to pages list</a>
 
-      <a
-        style="display: inline-block; outline: 1px solid black; padding: 5px"
-        href="<%= "/#{@site}/#{@page}" %>"
-        target="_blank"
-      >View live</a>
+      <form
+        action="<%= "/sites/#{@site}" %>"
+        method="GET"
+        style="padding: 5px; display: inline-block;"
+      >
+        <input type="submit" value="Back to pages list">
+      </form>
 
-      <% if @published %>
-        <form
-          action="<%= "/sites/#{@site}/page/#{@page}/unpublish" %>"
-          method="POST"
-          style="padding: 5px; display: inline-block; outline: 1px solid black"
-        >
-          <input type="submit" value="Unpublish">
-        </form>
-      <% else %>
-        <form
-          action="<%= "/sites/#{@site}/page/#{@page}/publish" %>"
-          method="POST"
-          style="padding: 5px; display: inline-block; outline: 1px solid black"
-        >
-          <input type="submit" value="Publish">
-        </form>
-      <% end %>
+      <form
+        action="<%= "/#{@site}/#{@page}" %>"
+        method="GET"
+        style="padding: 5px; display: inline-block;"
+      >
+        <input type="submit" value="View Live">
+      </form>
 
-        <form
-          action="<%= "/sites/#{@site}/page/#{@page}/revert" %>"
-          method="POST"
-          style="padding: 5px; display: inline-block; outline: 1px solid black"
-        >
-          <input type="submit" value="Revert Unpublished Changes">
-        </form>
+      <form
+        action="<%= "/sites/#{@site}/page/#{@page}/publish" %>"
+        method="POST"
+        onsubmit="return publishPage(event)"
+        style="padding: 5px; display: inline-block;"
+      >
+        <input type="submit" value="Publish">
+      </form>
+
+      <form
+        action="<%= "/sites/#{@site}/page/#{@page}/revert" %>"
+        method="POST"
+        onclick="return confirm('Are you sure? This will undo any changes since you last published.');"
+        style="padding: 5px; display: inline-block;"
+      >
+        <input type="submit" value="Revert Unpublished Changes">
+      </form>
+
+      <span id="storage-alert"></span>
 
 
     </div>
@@ -982,6 +982,39 @@
     </div>
 
     <script type="text/javascript">
+
+      function publishPage (event) {
+        event.preventDefault()
+        // First save ...
+        editor.store().then(result => {
+          // Then, submit the publish request over AJAX
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', event.target.action, true);
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+          xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+              alert(
+                "Published. When opening the live site, you may need to reload to see updates."
+              )
+            } else {
+              alert("Saving succeesed, but there was an error publishing.")
+            }
+          };
+
+          xhr.onerror = function() {
+            alert("Saving succeesed, but there was an error publishing.")
+          };
+
+          var formData = new FormData(event.target);
+          xhr.send(new URLSearchParams(formData).toString());
+        }).catch(error => {
+          alert("There was an error saving. Publish aborted.")
+        });
+
+        return false
+      }
+
       var lp = './img/';
       var plp = 'https://via.placeholder.com/350x250/';
       var images = [
@@ -1337,6 +1370,20 @@
             }
           }
         }
+      });
+
+      editor.on('storage:end', () => {
+        document.querySelector("#storage-alert").textContent = "saved"
+        setTimeout(() => {
+          document.querySelector("#storage-alert").textContent = ""
+        }, 2000)
+      });
+
+      editor.on('storage:error', () => {
+        document.querySelector("#storage-alert").textContent = "Error saving"
+        setTimeout(() => {
+          document.querySelector("#storage-alert").textContent = ""
+        }, 2000)
       });
 
       editor.I18n.addMessages({

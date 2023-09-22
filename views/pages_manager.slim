@@ -15,14 +15,17 @@ br
       b = page
 
       - if published?(@site, page)
-        form{
-          style="display: inline; margin-left: 15px"
-          action="/#{@site}/#{page}"
-          method="GET"
-        }
-          input type="submit" value="View"
+        - if activated?(@site, page)
+          form{
+            style="display: inline; margin-left: 15px"
+            action="/#{@site}/#{page}"
+            method="GET"
+          }
+            input type="submit" value="View"
+        - else
+          span style="margin-left: 10px" = "(deactivated)"
       - else
-        spans style="margin-left: 10px" = "(unpublished)"
+        span style="margin-left: 10px" = "(unpublished)"
 
       form{
         style="display: inline; margin-left: 15px"
@@ -38,6 +41,21 @@ br
       }
         input style="width: 70px" type="text" name="new_name" placeholder="new name"
         input type="submit" value="clone"
+
+      - if activated?(@site, page)
+        form{
+          action="/sites/#{@site}/page/#{page}/deactivate"
+          method="POST"
+          style="padding: 5px; display: inline-block;"
+        }
+          input type="submit" value="Deactivate"
+      - else
+        form{
+          action="/sites/#{@site}/page/#{page}/reactivate"
+          method="POST"
+          style="padding: 5px; display: inline-block;"
+        }
+          input type="submit" value="Reactivate"
 
       form{
         onclick="return clicked('are you sure');"
