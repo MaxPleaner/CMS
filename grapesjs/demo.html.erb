@@ -110,6 +110,22 @@
     </style>
   </head>
   <body>
+
+    <!-- NOTE: This is added by Dissonant CMS ---------->
+    <div style="padding: 5px" id="inserted-nav">
+      <a
+        style="display: inline-block; outline: 1px solid black; padding: 5px"
+        href="<%= "/sites/#{@site}" %>"
+      >Back to pages list</a>
+
+      <a
+        style="display: inline-block; outline: 1px solid black; padding: 5px"
+        href="<%= "/#{@site}/#{@page}" %>"
+        target="_blank"
+      >View live</a>
+    </div>
+    <!-------------------------------------------------->
+
     <div style="display: none">
       <div class="gjs-logo-cont">
         <a href="https://grapesjs.com"><img class="gjs-logo" src="/img/grapesjs-logo-cl.png"></a>

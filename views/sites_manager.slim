@@ -1,9 +1,13 @@
 h1 sites manager
 
+form action="/sites" method="POST"
+  input type="submit" value="Create Site"
+  input type="text" name="site" placeholder="name"
+
 - if @sites.any?
   ul
     - @sites.each do |site|
-      li
+      li style="margin-bottom: 10px"
         a href="/sites/#{site}" = site
 - else
   b No Sites Yet

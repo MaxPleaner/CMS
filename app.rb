@@ -18,8 +18,6 @@ get '/sites/:site/pages/:page/editor' do
   @page = alphanumeric(params[:page])
 
   erb File.read(File.join(settings.public_folder, "demo.html.erb"))
-
-  # render erb: "grapesjs/demo.html.erb"
 end
 
 # ---------------------------------------------
@@ -94,6 +92,26 @@ get "/sites/:site" do
 end
 
 # ---------------------------------------------
+# Create a site
+# ---------------------------------------------
+
+post "/sites" do
+  @site = alphanumeric(params[:site])
+  site_path = File.join(SITES_DIR, @site)
+  return 404 if same_path?(site_path, SITES_DIR)
+
+  if File.exists?(site_path)
+    flash[:message] = "Site already exists"
+    redirect "/"
+  end
+
+  FileUtils.mkdir(site_path)
+
+  redirect "/sites/#{@site}"
+end
+
+
+# ---------------------------------------------
 # Create a page in a site
 # ---------------------------------------------
 
@@ -158,6 +176,29 @@ get '/:site/:page' do
   return 404 unless File.exists?(html_file)
 
   send_file html_file
+end
+
+# ---------------------------------------------
+# Special handler to view the index page of a site
+# ---------------------------------------------
+
+get "/:site" do
+  @site = alphanumeric(params[:site])
+  @page = "index"
+  site_path = File.join(SITES_DIR, @site)
+  return 404 if same_path?(site_path, SITES_DIR)
+
+  pages_path = File.join(site_path, @page)
+  return 404 if same_path?(pages_path, site_path)
+
+  html_file = File.join(pages_path, "index.html")
+  return 404 unless File.exists?(html_file)
+
+  send_file html_file
+end
+
+get "/:site/" do
+  redirect "/#{params[:site]}"
 end
 
 
