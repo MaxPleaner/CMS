@@ -6,10 +6,7 @@ require 'sinatra/flash'
 require 'nokogiri'
 require 'base64'
 
-# TODO: support layout functionality
-
 # TODO: auto recompile published pages on layout change
-
 # TODO: Auth
 
 enable :sessions
@@ -417,7 +414,6 @@ def build_html(site, page, body, css)
     </div>
   HTML
   child_html_tree = Nokogiri::HTML.fragment(child_html).children.first
-  # byebug
   layout_wrapper.replace(child_html_tree)
   wrapper_tree.to_html
 end
