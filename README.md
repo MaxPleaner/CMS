@@ -45,4 +45,21 @@ This site shouldn't be such a pain to set up.
 
 4. At this point you're almost done. Just run `bundle exec ruby app.rb` for development server and `env RACK_ENV='production' bundle exec rackup` for production server.
 5. Go to the site, create a page - it will prompt you to log in - it will then bring you to the site edit page, where you can create pages and view more detailed instructions about linking pages, layouts, save/publish/revert, etc.
-6. Enjoy! 
+6. Enjoy!
+
+
+## Screenshots
+
+Site Manager
+
+<img width="615" alt="image" src="https://github.com/MaxPleaner/CMS/assets/56900907/63dd69e4-dd0e-4b0e-97e5-590e2b10dd92">
+
+Site Editor
+
+<img width="398" alt="image" src="https://github.com/MaxPleaner/CMS/assets/56900907/0b4d208f-27b0-43ee-a494-c09605753fbf">
+
+Page editor
+
+<img width="1671" alt="image" src="https://github.com/MaxPleaner/CMS/assets/56900907/bf7bdc79-ec21-4439-b948-56754f56ff57">
+
+
